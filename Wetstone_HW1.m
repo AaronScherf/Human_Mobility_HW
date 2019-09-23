@@ -53,7 +53,7 @@ figure
      hold all
  end  
  legend('day 1','day 2','day 3','day 4')
- title('Problem 1, Part 1')
+ title('Problem 1.1')
  xlabel('Hour')
  ylabel('Value (location)')
  
@@ -62,7 +62,7 @@ figure
 pareto(explained(1:3)) 
 xlabel('Principal Component')
 ylabel('Variance Explained (%)')
-title('Pareto Histogram of the Variance Explained')
+title('Problem 1.2 Pareto Histogram of the Variance Explained')
 
 sum(explained(1:3)) % returns 100%
 
@@ -70,17 +70,38 @@ sum(explained(1:3)) % returns 100%
 
 %% Problem 1, Part (3)
 figure % projection onto first two PCs
+sgtitle('Problem 1.3 Two-D Projections')
+grid on
+subplot(2,2,1)
 biplot(coeff(:,1:2),'scores',score(:,1:2),'varlabels',categories,'MarkerSize',25);
-title('Projection onto first two principal components')
+grid on
+xlabel('PC1')
+ylabel('PC2')
+subplot(2,2,2)
+biplot(coeff(:,[1 3]),'scores',score(:,[1 3]),'varlabels',categories,'MarkerSize',25);
+grid on
+xlabel('PC1')
+ylabel('PC3')
+subplot(2,2,3)
+biplot(coeff(:,2:3),'scores',score(:,2:3),'varlabels',categories,'MarkerSize',25);
+grid on
+xlabel('PC2')
+ylabel('PC3')
+
+
 figure % projection onto first three PCs
 biplot(coeff(:,1:3),'scores',score(:,1:3),'varlabels',categories,'MarkerSize',20);
-title('Projection onto first three principal components')
+title('Problem 1.3 Three-D Projection')
 
-% FLAG: do they have similar projections?
-% ^ what exactly does this mean? 
-% the projections look pretty similar. in 2D they span only 
-% about 135 degrees of the plot.
-% In the 3D space still not in a huge part of the sphere
+% The projections are distinct from one another, but do not span a huge
+% amount of the 3-D space of the first three principal components. In the
+% biplot of the first two PCs the projections span about 135 degrees of the
+% plot, showing that there is diversity but they are not hugely different.
+% There is more variation in the 2D projection onto PCs 1 and 3, where the
+% projections span more than 180 degrees of the space. They are the most
+% similar in the 2D projections onto PCs 2 and 3. Most of the days fall
+% into one quadrant of that two-dimensional space, and two of the largest
+% exceptions (23h and 24h) are very similar to one another.
 
 %% Problem 1, Part (4)
 % plot the first three eigenvectors
@@ -89,19 +110,10 @@ title('Projection onto first three principal components')
      plot(coeff(:,i))
      hold all 
   end
-  xlabel('Time','FontSize',16);
-  ylabel('Value','FontSize',16);
+  xlabel('Time','FontSize',14);
+  ylabel('Value','FontSize',14);
   legend('eigenvec 1','eigenvec 2','eigenvec 3')
-  
-%   % OR
-%   for i=1:3
-%       draw_eigbehav(coeff,i)
-%   end
-%   
-% draw_eigbehav(coeff,1) % why isn't this working? only for that speciifc dataset
-  
-  % FLAG: confirm that this means plotting them over the 
-  % course of a day, and not in another space
+  title('Problem 1.4 First 3 Eigenvectors','Fontsize',16)
   
 %% Problem 1, Part (5)
 
@@ -128,7 +140,8 @@ y_min = min([min(rc) min(Mcolor(day,:))]);
 y_max = max([max(rc) max(Mcolor(day,:))]);
 
 figure
-subplot(1,2,1)
+sgtitle('Problem 1.5')
+subplot(2,1,1)
 plot(Mcolor(day,:),'ro-')
 ylim([y_min y_max]);
 xlim([0 24]);
@@ -140,7 +153,7 @@ xlabel('Hour', 'FontSize', font_size);
 ylabel('Value', 'FontSize', font_size)
 
 % plot reconstruction
-subplot(1,2,2)
+subplot(2,1,2)
 plot(rc,'o-')
 ylim([y_min y_max]);
 xlim([0 24]);
@@ -172,7 +185,7 @@ for i=1:3
     dayn = days(i);
     
     figure
-    full_title = ['Values Day ',num2str(dayn)];
+    full_title = ['Problem 2.1 Day ',num2str(dayn)];
     sgtitle(full_title)
     day = Mbw(dayn,:);
     ax1=subplot(3,2,1);
@@ -211,7 +224,7 @@ end
 % Plot the first three eigenvectors
 for i=1:3
     figure
-    full_title = ['Eigenvector ',num2str(i)];
+    full_title = ['Problem 2.1 Eigenvector ',num2str(i)];
     sgtitle(full_title)
     numb=i;
     ax1=subplot(3,2,1);
@@ -269,7 +282,7 @@ end
 figure % projection onto first three PCs
 daylabels = {'Day 10','Day 15','Day 20'};
 biplot(wcoeff(days,1:3),'VarLabels',daylabels,'MarkerSize',20);
-title('Projection onto first three principal components')
+title('Problem 2.1 Projection onto first 3 PCs')
 
 wcoeff(days, 1:3)
 % note that in the biplot, it is -1*the values in wcoeff
@@ -295,7 +308,7 @@ wcoeff(days, 1:3)
 %% Problem 2, Part (2)
 
 figure
-sgtitle('Data reconstruction with 3 eigenvectors');
+sgtitle('Problem 2.2 Reconstruction with 3 Eigenvectors');
 for i = 1:3
     day = days(i);
     
@@ -339,31 +352,34 @@ end
 %% Problem 2, Part (3)
 fprintf('The first three eigenvectors account for %.2f%%\nof the variance in the entire data\n',sum(explained(1:3))) % returns 53.8375
 
-% [data matrix - reconstruction] / [# points in data]
 % Compute accuracy of 3 sample days based on number of eigenvectors
 % reconstruct with specified number of eigenvectors
 % compute the accuracy for each day
 % err gives 1
 eigens = 3;
-acc = 0;
-while acc < 75
+min_acc = 0;
+while min_acc < 75
     rec = bsxfun(@plus,mu,score(:,1:eigens) *wcoeff(:,1:eigens)');
-    err = norm(Mbw(days,:)-rec(days,:)) / norm(Mbw(days,:));
-%     abs(Mbw(days,:) - rec(days,:));
-%     err = sum(err,'all') / sum(Mbw(days,:),'all');
-    acc = 100*(1 - err);
-    fprintf('%.2f%% explained by %d PCs\n', acc, eigens)
+    acc = [];
+    for j=1:3
+        day = days(j);
+        err = norm(Mbw(day,:)-rec(day,:)) / norm(Mbw(day,:));
+        acc(j) = 100*(1 - err);
+    end
+    min_acc = min(acc);
+%     err = norm(Mbw(days,:)-rec(days,:)) / norm(Mbw(days,:));
+% %     abs(Mbw(days,:) - rec(days,:));
+% %     err = sum(err,'all') / sum(Mbw(days,:),'all');
+%     acc = 100*(1 - err);
+    fprintf('%.2f%% explained by %d PCs\n', min_acc, eigens)
     eigens = eigens + 1;
 end
-% FLAG: check with someone that 25 is right
-% 76.20% explained by 25 PCs
+% FLAG: check with someone that 42 is right
 
-% the above gives the wrong result over the whole dataset for 3
-% eigenvectors. says they only have an accuracy of 27.959 instead of 53.84
-rec = bsxfun(@plus,mu,score(:,1:3) *wcoeff(:,1:3)');
-err = norm(Mbw - rec) / norm(Mbw);
-acc = 100*(1 - err);
-acc
+rec = bsxfun(@plus,mu,score(:,1:42) *wcoeff(:,1:42)');
+day = 20;
+err = norm(Mbw(day,:)-rec(day,:)) / norm(Mbw(day,:));
+acc = 100*(1 - err)
 
 % graph days 10 15 and 20 for subject 4
 figure
@@ -395,7 +411,7 @@ fprintf('This result was validated by plotting the three days with the worst cal
 % To double check that it worked correctly, plot 3 best and 3 worst
 %% plot 3 worst
 figure
-sgtitle('Worst reconstructions');
+sgtitle('Problem 2.4 Worst Reconstructions');
 for i = 1:3
     day = worst_idx(i);
     
@@ -428,7 +444,7 @@ for i = 1:3
 end
 %% plot 3 best
 figure
-sgtitle('Best reconstructions');
+sgtitle('Problem 2.4 Best Reconstructions');
 for i = 1:3
     day = best_idx(i);
     
@@ -465,6 +481,8 @@ figure
 plot(score(:,1), score(:,2),'o')
 xlabel('First PC Score')
 ylabel('Second PC Score')
+title('Problem 2.5 First PC vs. Second PC')
+
 gname
 
 %% Problem 2, Part (6)
@@ -475,7 +493,7 @@ extreme % 8, 44, 114, 157, 163
 
 % Plot the extreme days
 figure
-sgtitle('5 days most distant to the mean')
+sgtitle('Problem 2.6 Days most distant to mean')
 for i=1:length(extreme)
     subplot(3,2,i)
     day = extreme(i);
@@ -509,7 +527,9 @@ figure
      plot((Mcolor(i,:)))
      hold all
      %T(i)=sum(Mcolor(i,:));
- end    
+ end  
+ title('Problem 3')
+
  
 %% Problem 3, Part (1)
 size(Mcolor); % dimension is 1255x96
@@ -529,7 +549,7 @@ hours = 0:0.25:23.75;
      plot(hours,coeff(:,i))
      hold all 
   end
-  xlabel('Hour');
+  xlabel('Time (Hour)');
   ylabel('Value');
   legend('PC1','PC2','PC3')
   grid on
@@ -540,11 +560,12 @@ hours = 0:0.25:23.75;
      plot(hours,coeff(:,i))
      hold all 
   end
-  xlabel('Hour');
+  xlabel('Time (Hour)');
   ylabel('Value');
   legend('PC4','PC5','PC6')
   xlim([0 24])
   grid on
+  sgtitle('Problem 3.2 First 6 Eigenvectors')
   
   %% Problem 3, Part (3)
  pct = 0;
@@ -581,12 +602,13 @@ R=[score(:,1),score(:,2),score(:,3),score(:,4),score(:,5),score(:,6)];
   end
   xlabel('Score 1')
   ylabel('Score 2')
-  title('Cluster Centroids')
+  title('Problem 3.4 Cluster Centroids')
   legend('Cluster 1','Cluster 2','Cluster 3','Cluster 4')
   xlim([min(score(:,1)) max(score(:,1))])
   ylim([min(score(:,2)) max(score(:,2))])
 
 figure
+sgtitle('Problem 3.4')
 id=1
 subplot(2,2,id)
 textcolor(id,:) = ColorMap(1+round((ncolors-1)*(id-1)/(K-1)),:);  
@@ -626,6 +648,7 @@ title('Cluster 4')
 %% Problem 2, Part (5)
 %  FLAG: how do you want us to plot the data?
 figure
+sgtitle('Problem 3.5')
 for i=1:K
     subplot(2,2,i)
     cluster=Mcolor(ID2==i,:);
@@ -641,49 +664,18 @@ for i=1:K
     title(titlex)
 end
 
-% Cluster 3 overall strongly resembles the shape of PC1, with high peaks 
+% Cluster 1 overall strongly resembles the shape of PC1, with high peaks 
 % around 11 hours and 16 hours. This is also reflected in that most of
-% cluster 3 has negative scores for PC2, making the peaks at ~11 and 16
+% cluster 1 has negative scores for PC2, making the peaks at ~11 and 16
 % more pronounced.
 
-% Cluster 2 has the most diversity of any of the clusters in the scores for
+% Cluster 3 has the most diversity of any of the clusters in the scores for
 % PC1 and PC2. It also has the largest score for PC1.
 
-% Cluster 1 is the most compact in terms of scores for PC1 and PC2. 
+% Cluster 4 is the most compact in terms of scores for PC1 and PC2. 
 
 % The clusters divided almost entirely along the lines of their scores for
 % PC1, implying that PC1 accounts for a large percentage of the variance
 % and therefore the clustering. This is corroborated by the fact that
 % explained(1) = 73.87, so PC1 accounts for 73.87% of the total variance in
 % the data.
-
-%% DELETE
-figure
- for i=1:size(Mcolor,1) % number of accounts
-     plot((Mcolor(i,:)))
-     hold all
-     %T(i)=sum(Mcolor(i,:));
- end  
- 
-  % DELETE: part 1 plotting days
-figure
- for i=1:size(Mcolor,1)
-     plot(Mcolor(i,:),'o-')
-     hold all
- end  
- legend('day 1','day 2','day 3','day 4')
- title('Problem 1, Part 1')
- xlabel('Hour')
- ylabel('Value (location)')
- 
- % DELETE: plot and change x axis
-   for i=1:3
-     plot(hours,coeff(:,i))
-     hold all 
-  end
-  xlabel('Hour');
-  ylabel('Value');
-  legend('PC1','PC2','PC3')
-  grid on
-  xlim([0 24])
-  
