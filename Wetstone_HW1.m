@@ -489,7 +489,7 @@ gname
 [st2, index] = sort(tsquared,'descend'); % sort descending
 extreme = index(1:5);
 % Five days most distant to the mean:
-extreme % 8, 44, 114, 157, 163
+extreme; % 8, 44, 114, 157, 163
 
 % Plot the extreme days
 figure

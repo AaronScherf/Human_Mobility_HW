@@ -1,13 +1,10 @@
-%% CYPLAN 257: Homework 1
-% Katie Wetstone
-% Due 9/23/19
-cd  '/Users/katewetstone/Desktop/CYPLAN 257 Data Science Human Mobility/DataHW1'
+cd 'C:\Users\theaa\Desktop\Data Science Pedagogy Resources\Matlab\Human Mobility\DataHW1\Human_Mobility_HW\HW1';
 
-%% Problem 1
-% 
+% Problem 1: Basics of PCA
+%% 1.1
+% 1) Use the script simple_schedulePr1.m and plot each day of data of a
+% simple schedule of 4 days, each integer represents a location ID (1pt)
 
-%% Problem 1, Part (1)
-% from simple_schedulePr1.m
 clear
 %%%%needed for biplot
 categories = cell(24,1);
@@ -57,18 +54,23 @@ figure
  xlabel('Hour')
  ylabel('Value (location)')
  
-%% Problem 1, Part (2)
+
+%% 1.2
+% 2) Calculate the PCA on this Matrix and plot the pareto histogram of the
+% variance explained. How much variance the first three eigenvectors explain? (1pt)
+
 [coeff,score,latent,tsquared,explained] = pca(Mcolor);
 pareto(explained(1:3)) 
 xlabel('Principal Component')
 ylabel('Variance Explained (%)')
 title('Pareto Histogram of the Variance Explained')
 
-sum(explained(1:3)) % returns 100%
+sum(explained(1:3))
 
-% The first three eigenvectors explain 100% of the variance
 
-%% Problem 1, Part (3)
+%% 1.3
+% 3) Plot the biplots of the scores and component projections of the data.
+
 figure % projection onto first two PCs
 biplot(coeff(:,1:2),'scores',score(:,1:2),'varlabels',categories,'MarkerSize',25);
 title('Projection onto first two principal components')
@@ -76,14 +78,11 @@ figure % projection onto first three PCs
 biplot(coeff(:,1:3),'scores',score(:,1:3),'varlabels',categories,'MarkerSize',20);
 title('Projection onto first three principal components')
 
-% FLAG: do they have similar projections?
-% ^ what exactly does this mean? 
-% the projections look pretty similar. in 2D they span only 
-% about 135 degrees of the plot.
-% In the 3D space still not in a huge part of the sphere
 
-%% Problem 1, Part (4)
-% plot the first three eigenvectors
+% Do they have similar projections? (1pt)
+
+%% 1.4
+%4) Plot the 3 first eigenvectors (1pt)
  figure
   for i=1:size(coeff,2)
      plot(coeff(:,i))
@@ -93,17 +92,9 @@ title('Projection onto first three principal components')
   ylabel('Value','FontSize',16);
   legend('eigenvec 1','eigenvec 2','eigenvec 3')
   
-%   % OR
-%   for i=1:3
-%       draw_eigbehav(coeff,i)
-%   end
-%   
-% draw_eigbehav(coeff,1) % why isn't this working? only for that speciifc dataset
-  
-  % FLAG: confirm that this means plotting them over the 
-  % course of a day, and not in another space
-  
-%% Problem 1, Part (5)
+ %% 1.5
+% 5) Reconstruct day 2 with the first 2 eigenvectors, show data vs. reconstruction (1pt)
+
 
 % show original day 2 data
 day = 2
@@ -151,9 +142,9 @@ title(title_x, 'FontSize', font_size)
 grid on
 
 %%
+% Problem 2: Eigenbehaviors 
+% Use the activity matrix of subject 4, and answer the following questions:
 
-%% Problem 2
-%
 clear
 close all
 % load data
@@ -165,7 +156,11 @@ Mbw = generate_binary(M');
 
 days = [10, 15, 20];
 
-%% Problem 2, Part (1)
+%% 2.1
+% How the first 3 eigenvectors for the chosen subject relate to the
+% behaviors seen in days 10, 15 and 20 of this subject. Do the projections
+% to answer this question. (2 pts)
+
 
 %Plot the days
 for i=1:3
@@ -247,55 +242,22 @@ for i=1:3
     linkaxes([ax1,ax2,ax3,ax4,ax5],'xy')
 end
 
-% Comments
-% Day 10
-% * Basically same as Day 15
-% * Home and work are both the negative of eigenvectors 1 and 2. No exceptions. Exactly 1 and 2. 
-% * Then why are eigens 1 and 2 the same behavior?
-% * More like Eigen 1 than Eigen 2, b/c elsewhere and no signal are zero
-% Day 15
-% * Home and work correspond to the the negative of eigenvector 1 and eigenvector 2.
-% * Elsewhere corresponds more to eigenvector 3 (negative)
-% * Only exception is hours ~17 and ~22-23
-% * More like Eigen 2, because elsewhere and no signal are nonzero
-% Day 20
-% * Closest to eigenvector 3 because of the elsewhere values. Sort of?
-% * No signal doesn?t really correspond to any , but there is a tiny bump in no signal at those times in Eigen 2
-% * Eigen 3 does appear to have a break in the values of off around the right time (~11 or 12) in the correct direction
-% * Doesn?t correspond that well to any of them.
-
-%%
 % project days 10, 15, and 20 on PC 1-3
 figure % projection onto first three PCs
 daylabels = {'Day 10','Day 15','Day 20'};
 biplot(wcoeff(days,1:3),'VarLabels',daylabels,'MarkerSize',20);
-title('Projection onto first three principal components')
+title('Problem 2.1 Projection onto first 3 PCs')
 
 wcoeff(days, 1:3)
-% note that in the biplot, it is -1*the values in wcoeff
 
-% Day 10 is explained twice as much by PC1 as by PC2 (both 
-% positive, 0.02 and 0.04), but primarily explained by PC3 (0.09)
 
-% Day 15 is not explained well by any of the three first PCs. Its
-% coefficient is less than 0.004 (abs) for all three of them.
+%% 2.2
+% Draw the reconstruction of these three sample days with the first three
+% eigenvectors. (2 pts)
 
-% Day 20 is explained mostly by PC3 (-0.06), and then by PC1 (0.015).
-% It is explained a very small amount by PC2 (-0.0035).
-
-% The largest coefficient in the first PC are Day 10 and Day 20, which
-% both have positive coefficients in that direction. The second PC has
-% the largest coefficient in day 10, which is positive, but that
-% coefficient is still fairly small. Day 20 has a negative coefficient
-% for PC2 but it is very small.
-% The third PC has the largest coefficient in day 10, which has a 
-% positive coefficient, followed by day 20, which has a negative 
-% coefficient.
-
-%% Problem 2, Part (2)
 
 figure
-sgtitle('Data reconstruction with 3 eigenvectors');
+sgtitle('Problem 2.2 Reconstruction with 3 Eigenvectors');
 for i = 1:3
     day = days(i);
     
@@ -336,47 +298,37 @@ for i = 1:3
     grid on
 end
 
-%% Problem 2, Part (3)
+
+%% 2.3
+% What percentage of the variance of the entire data the first 3
+% eigenvectors account for? How many eigenvectors do you need to
+% reconstruct each of the 3 sample days with more than 75% accuracy? (3pts)
+
 fprintf('The first three eigenvectors account for %.2f%%\nof the variance in the entire data\n',sum(explained(1:3))) % returns 53.8375
 
-% [data matrix - reconstruction] / [# points in data]
 % Compute accuracy of 3 sample days based on number of eigenvectors
 % reconstruct with specified number of eigenvectors
 % compute the accuracy for each day
-% err gives 1
+
 eigens = 3;
-acc = 0;
-while acc < 75
+min_acc = 0;
+while min_acc < 75
     rec = bsxfun(@plus,mu,score(:,1:eigens) *wcoeff(:,1:eigens)');
-    err = norm(Mbw(days,:)-rec(days,:)) / norm(Mbw(days,:));
-%     abs(Mbw(days,:) - rec(days,:));
-%     err = sum(err,'all') / sum(Mbw(days,:),'all');
-    acc = 100*(1 - err);
-    fprintf('%.2f%% explained by %d PCs\n', acc, eigens)
+    acc = [];
+    for j=1:3
+        day = days(j);
+        err = norm(Mbw(day,:)-rec(day,:)) / norm(Mbw(day,:));
+        acc(j) = 100*(1 - err);
+    end
+    min_acc = min(acc);
+    fprintf('%.2f%% explained by %d PCs\n', min_acc, eigens)
     eigens = eigens + 1;
 end
-% FLAG: check with someone that 25 is right
-% 76.20% explained by 25 PCs
 
-% the above gives the wrong result over the whole dataset for 3
-% eigenvectors. says they only have an accuracy of 27.959 instead of 53.84
-rec = bsxfun(@plus,mu,score(:,1:3) *wcoeff(:,1:3)');
-err = norm(Mbw - rec) / norm(Mbw);
-acc = 100*(1 - err);
-acc
+%% 2.4
+% Can you identify a day that is the worst reconstructed by the first 3
+%eigenbehaviors? justify your answer (3 pts)
 
-% graph days 10 15 and 20 for subject 4
-figure
-colormap hot
-colorbar
-imagesc(M(days,:));
-% for how to show binary matrix look at class 9.09 slide 25
-
-
-%% Problem 2, Part (4)
-% FLAG: calculate by day using norm? or for each day, take the absolute
-% value of the difference and divide it by the day's value?
-% for now, do norm of the day
 
 rec = bsxfun(@plus,mu,score(:,1:3) *wcoeff(:,1:3)');
 err = [];
@@ -395,7 +347,7 @@ fprintf('This result was validated by plotting the three days with the worst cal
 % To double check that it worked correctly, plot 3 best and 3 worst
 %% plot 3 worst
 figure
-sgtitle('Worst reconstructions');
+sgtitle('Problem 2.4 Worst Reconstructions');
 for i = 1:3
     day = worst_idx(i);
     
@@ -428,7 +380,7 @@ for i = 1:3
 end
 %% plot 3 best
 figure
-sgtitle('Best reconstructions');
+sgtitle('Problem 2.4 Best Reconstructions');
 for i = 1:3
     day = best_idx(i);
     
@@ -459,23 +411,29 @@ for i = 1:3
     title(title_x, 'FontSize', font_size)
     grid on
 end
+%% 2.5
+% Plot the First vs. the Second PCA and mark few days using gname (3pts)
 
-%% Problem 2, Part (5)
 figure
 plot(score(:,1), score(:,2),'o')
 xlabel('First PC Score')
 ylabel('Second PC Score')
+title('Problem 2.5 First PC vs. Second PC')
+
 gname
 
-%% Problem 2, Part (6)
+%% 2.6
+% Based on the Tsquared what are the 5 days most distant to the mean?
+% Plot them as the value of the component vs time
+
 [st2, index] = sort(tsquared,'descend'); % sort descending
 extreme = index(1:5);
 % Five days most distant to the mean:
-extreme % 8, 44, 114, 157, 163
+extreme; % 8, 44, 114, 137, 142
 
 % Plot the extreme days
 figure
-sgtitle('5 days most distant to the mean')
+sgtitle('Problem 2.6 Days most distant to mean')
 for i=1:length(extreme)
     subplot(3,2,i)
     day = extreme(i);
@@ -489,9 +447,8 @@ end
 
 
 %%
-
-%% Problem 3
-%
+% Problem 3: Clustering Electric Consumption with PCA
+% Use the data read and provided in the script pca_electricHW.m
 clear
 close all
 % load data
@@ -509,14 +466,19 @@ figure
      plot((Mcolor(i,:)))
      hold all
      %T(i)=sum(Mcolor(i,:));
- end    
- 
-%% Problem 3, Part (1)
+ end  
+ title('Problem 3')
+
+
+%% 3.1
+%1) How many accounts are given? and What is the dimension of the data? (1pt)
 size(Mcolor); % dimension is 1255x96
-fprintf('%d accounts are given.\n', size(Mcolor,2))
+fprintf('%d accounts are given.\n', size(Mcolor,1))
 fprintf('The dimensions are %d by %d\n', size(Mcolor,1), size(Mcolor,2))
 
-%% Problem 3, Part (2)
+
+%% 3.2
+% 2) Plot the first 6 eigenvectors, convert the x axis in a range from 1 to 24 (1pt)
 % do PCA
 [coeff,score,latent,tsquared,explained,mu] = pca(Mcolor);
 % create vector with hour
@@ -529,7 +491,7 @@ hours = 0:0.25:23.75;
      plot(hours,coeff(:,i))
      hold all 
   end
-  xlabel('Hour');
+  xlabel('Time (Hour)');
   ylabel('Value');
   legend('PC1','PC2','PC3')
   grid on
@@ -540,14 +502,17 @@ hours = 0:0.25:23.75;
      plot(hours,coeff(:,i))
      hold all 
   end
-  xlabel('Hour');
+  xlabel('Time (Hour)');
   ylabel('Value');
   legend('PC4','PC5','PC6')
   xlim([0 24])
   grid on
+  sgtitle('Problem 3.2 First 6 Eigenvectors')
   
-  %% Problem 3, Part (3)
- pct = 0;
+
+%% 3.3
+% 3) How many K eigenvectors are needed to explain at least 92% of the variance?
+pct = 0;
  eigs = 1;
  while pct < 92
       pct = sum(explained(1:eigs));
@@ -557,8 +522,13 @@ hours = 0:0.25:23.75;
  % Four eigenvectors are needed to explain at least 92% of the variance
  sum(explained(1:4))
  
- %% Problem 3, Part (4)
- 
+
+
+%%
+% 4)Use that number to apply Kmeans with K equal to the answer above,
+% show the clusters given by the method and their centroids
+
+
 coefforth= inv(diag(std(Mcolor)))*coeff;
 ColorMap = colormap;
 ncolors = size(ColorMap,1);
@@ -581,12 +551,13 @@ R=[score(:,1),score(:,2),score(:,3),score(:,4),score(:,5),score(:,6)];
   end
   xlabel('Score 1')
   ylabel('Score 2')
-  title('Cluster Centroids')
+  title('Problem 3.4 Cluster Centroids')
   legend('Cluster 1','Cluster 2','Cluster 3','Cluster 4')
   xlim([min(score(:,1)) max(score(:,1))])
   ylim([min(score(:,2)) max(score(:,2))])
 
 figure
+sgtitle('Problem 3.4')
 id=1
 subplot(2,2,id)
 textcolor(id,:) = ColorMap(1+round((ncolors-1)*(id-1)/(K-1)),:);  
@@ -623,9 +594,12 @@ plot(ClusterCentroid2(id,1),ClusterCentroid2(id,2),'kx','MarkerSize',12)
 hold on
 title('Cluster 4')
 
-%% Problem 2, Part (5)
-%  FLAG: how do you want us to plot the data?
+%%
+% 5)Plot the data of the original accounts separated in K subplots. What
+% can you learn from the accounts that belong to each of the K clusters.
+
 figure
+sgtitle('Problem 3.5')
 for i=1:K
     subplot(2,2,i)
     cluster=Mcolor(ID2==i,:);
@@ -641,49 +615,18 @@ for i=1:K
     title(titlex)
 end
 
-% Cluster 3 overall strongly resembles the shape of PC1, with high peaks 
+% Cluster 1 overall strongly resembles the shape of PC1, with high peaks 
 % around 11 hours and 16 hours. This is also reflected in that most of
-% cluster 3 has negative scores for PC2, making the peaks at ~11 and 16
+% cluster 1 has negative scores for PC2, making the peaks at ~11 and 16
 % more pronounced.
 
-% Cluster 2 has the most diversity of any of the clusters in the scores for
+% Cluster 3 has the most diversity of any of the clusters in the scores for
 % PC1 and PC2. It also has the largest score for PC1.
 
-% Cluster 1 is the most compact in terms of scores for PC1 and PC2. 
+% Cluster 4 is the most compact in terms of scores for PC1 and PC2. 
 
 % The clusters divided almost entirely along the lines of their scores for
 % PC1, implying that PC1 accounts for a large percentage of the variance
 % and therefore the clustering. This is corroborated by the fact that
 % explained(1) = 73.87, so PC1 accounts for 73.87% of the total variance in
 % the data.
-
-%% DELETE
-figure
- for i=1:size(Mcolor,1) % number of accounts
-     plot((Mcolor(i,:)))
-     hold all
-     %T(i)=sum(Mcolor(i,:));
- end  
- 
-  % DELETE: part 1 plotting days
-figure
- for i=1:size(Mcolor,1)
-     plot(Mcolor(i,:),'o-')
-     hold all
- end  
- legend('day 1','day 2','day 3','day 4')
- title('Problem 1, Part 1')
- xlabel('Hour')
- ylabel('Value (location)')
- 
- % DELETE: plot and change x axis
-   for i=1:3
-     plot(hours,coeff(:,i))
-     hold all 
-  end
-  xlabel('Hour');
-  ylabel('Value');
-  legend('PC1','PC2','PC3')
-  grid on
-  xlim([0 24])
-  
