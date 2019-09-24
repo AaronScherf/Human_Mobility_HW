@@ -645,7 +645,7 @@ plot(ClusterCentroid2(id,1),ClusterCentroid2(id,2),'kx','MarkerSize',12)
 hold on
 title('Cluster 4')
 
-%% Problem 2, Part (5)
+%% Problem 3, Part (5)
 %  FLAG: how do you want us to plot the data?
 figure
 sgtitle('Problem 3.5')
